@@ -1,0 +1,4 @@
+.graytoggle_picom.pid
+.graytoggle_picom.log
+__pycache__/
+*.pyc

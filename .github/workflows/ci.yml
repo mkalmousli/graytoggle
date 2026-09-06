@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Byte-compile graytoggle.py
+        run: python3 -m py_compile graytoggle.py
+
+      - name: Shellcheck install.sh
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: '.'
+          ignore_paths: assets
+
+      - name: Verify Makefile install/uninstall
+        run: |
+          make install PREFIX="$PWD/.ci-prefix"
+          test -x .ci-prefix/bin/graytoggle
+          test -f .ci-prefix/share/graytoggle/shaders/grayscale.glsl
+          make uninstall PREFIX="$PWD/.ci-prefix"
+          test ! -e .ci-prefix/bin/graytoggle
